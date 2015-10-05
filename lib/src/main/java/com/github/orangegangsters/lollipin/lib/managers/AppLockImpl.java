@@ -111,19 +111,14 @@ public class AppLockImpl<T extends AppLockActivity> extends AppLock implements L
     }
 
     private String generateSalt() {
-        byte[] salt;
         try {
-            SecretKey key = SecretKeyFactory
-                    .getInstance(KEY_ALGORITHM)
-                    .generateSecret(new PBEKeySpec(DEFAULT_PASSWORD_SALT.toCharArray()));
-            Cipher cipher = Cipher.getInstance(KEY_ALGORITHM);
-            salt = new byte[KEY_LENGTH];
-            new SecureRandom().nextBytes(salt);
-            cipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(salt, KEY_ITERATIONS));
-        } catch (Exception e) {
-            salt = DEFAULT_PASSWORD_SALT.getBytes();
+            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+            sr.setSeed(System.currentTimeMillis());
+            long salt = sr.nextLong();
+            return String.valueOf(salt);
+        } catch (Exception e){
+            return "mysupersaltysalt";
         }
-        return Base64.encodeToString(salt, Base64.DEFAULT);
     }
 
     @Override
